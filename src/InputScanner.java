@@ -14,10 +14,10 @@ public class InputScanner {
         return inputString;
     }
 
-    public double readDoubleInput(String outputPrompt) {
-        double inputString = 0;
+    public int readIntegerInput(String outputPrompt) {
+        int inputString = 0;
         System.out.print(outputPrompt + ":");
-        inputString = this.scanner.nextDouble();
+        inputString = this.scanner.nextInt();
         return inputString;
     }
 
