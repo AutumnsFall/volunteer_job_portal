@@ -1,11 +1,14 @@
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class JobPortal {
     private ArrayList<Employee> employees;
     private ArrayList<Employer> employers;
     private ArrayList<Job> jobs;
     private InputScanner input;
+    private Employer currentUserAsEmployer;
     private User currentUser;
+    private Employee currentUserAsEmployee;
     private boolean userIsEmployer;
     private boolean isLoggedIn;
 
@@ -82,11 +85,13 @@ public class JobPortal {
                 if (id != -1) {
                     if (current.match(id, name, password)) {
                         this.currentUser = current;
+                        this.currentUserAsEmployer = current;
                         return true;
                     }
                 } else {
                     if (current.match(name, password)) {
                         this.currentUser = current;
+                        this.currentUserAsEmployer = current;
                         return true;
                     }
                 }
@@ -100,16 +105,39 @@ public class JobPortal {
             if (id != -1) {
                 if (current.match(id, name, password)) {
                     this.currentUser = current;
+                    this.currentUserAsEmployee = current;
                     return true;
                 }
             } else {
                 if (current.match(name, password)) {
                     this.currentUser = current;
+                    this.currentUserAsEmployee = current;
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public ArrayList<Job> searchJob(String name) {
+        if (!this.userIsEmployer && this.currentUserAsEmployee.hasJob()) {
+            System.out.println("You cannot search for jobs when you already has a job.");
+            return new ArrayList<Job>();
+        }
+        return this.jobs.stream().filter(job -> job.isActive() && job.getNameSmallLetter().contains(name.toLowerCase())).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public void applyJob(String name) {
+        if (this.currentUserAsEmployee.hasJob() || this.userIsEmployer) {
+            System.out.println("You cannot apply for jobs when you already has a job.");
+            return;
+        }
+
+        for(Job current: this.jobs) {
+            if (current.getNameSmallLetter().equalsIgnoreCase(name)) {
+                current.applyJob(this.currentUser.getId());
+            }
+        }
     }
 
 }
